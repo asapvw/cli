@@ -126,6 +126,12 @@ als() { # print current aliases, optionally filtered: `als git`
     fi
 }
 
+pkgsync() { # refresh the package manifests committed in this repo
+    brew bundle dump --force --file="$ZDOTDIR/packages/Brewfile"
+    apt-mark showmanual > "$ZDOTDIR/packages/apt-manual.txt"
+    print "Updated $ZDOTDIR/packages/ — review with: git -C $ZDOTDIR diff packages"
+}
+
 alias home='cd ~'
 alias reload='source $ZDOTDIR/.zshrc'
 alias path='echo -e ${PATH//:/\\n}'

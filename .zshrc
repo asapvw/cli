@@ -43,20 +43,28 @@ export GPG_TTY=$(tty)
 # (~/.zshenv stub points ZDOTDIR at ~/.config/zsh, a symlink to this repo).
 # -----------------------------------------------------------------------------
 _ensure_links() {
-  [[ -z "$DOTFILES" || ! -d "$DOTFILES" ]] && return
-
+  # CLI tool configs live in this repo (tools/), addressed via $ZDOTDIR so the
+  # links survive a repo move/rename. Cross-platform configs (gitconfig, nvim)
+  # stay in the dotfiles repo.
   typeset -A links=(
-    "$DOTFILES/cli/linux/yazi.toml"    "$HOME/.config/yazi/yazi.toml"
-    "$DOTFILES/git/.gitconfig"         "$HOME/.gitconfig"
-    "$DOTFILES/nvim"                   "$HOME/.config/nvim"
+    "$ZDOTDIR/tools/yazi/yazi.toml"     "$HOME/.config/yazi/yazi.toml"
+    "$ZDOTDIR/tools/yazi/keymap.toml"   "$HOME/.config/yazi/keymap.toml"
+    "$ZDOTDIR/tools/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
+    "$ZDOTDIR/tools/btop"               "$HOME/.config/btop"
+    "$ZDOTDIR/tools/git/ignore"         "$HOME/.config/git/ignore"
+    "$DOTFILES/git/.gitconfig"          "$HOME/.gitconfig"
+    "$DOTFILES/nvim"                    "$HOME/.config/nvim"
     # Lets ~-based paths in the shared .gitconfig (core.excludesFile etc.)
     # resolve identically on WSL and Windows
-    "$WIN_HOME/repos"                  "$HOME/repos"
+    "$WIN_HOME/repos"                   "$HOME/repos"
   )
   for src target in "${(@kv)links}"; do
+    [[ -e "$src" ]] || continue  # skip if source repo/file isn't present
     if [[ ! -L "$target" || "$(readlink "$target")" != "$src" ]]; then
+      # A real (non-link) dir at $target would swallow the link; move it aside
+      [[ -d "$target" && ! -L "$target" ]] && mv "$target" "$target.pre-link.bak"
       mkdir -p "$(dirname "$target")"
-      ln -sf "$src" "$target"
+      ln -sfn "$src" "$target"
     fi
   done
 }

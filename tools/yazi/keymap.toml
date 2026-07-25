@@ -1,0 +1,7 @@
+# Yazi keybindings — prepended to the defaults (defaults stay intact).
+# Managed by _ensure_links in the cli repo's .zshrc; symlinked to ~/.config/yazi/keymap.toml
+
+[[mgr.prepend_keymap]]
+on   = "!"
+run  = 'shell "zsh" --block'
+desc = "Drop into zsh at yazi's cwd (exit to return)"

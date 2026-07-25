@@ -1,0 +1,41 @@
+# ~/.config/yazi/yazi.toml
+
+[mgr]
+# Show dotfiles (hidden files) by default when Yazi launches,
+# instead of requiring the "." toggle every session.
+# NOTE: newer Yazi releases renamed this table to [mgr] — if this
+# stops working after an update, that's likely why.
+show_hidden = true
+
+[opener]
+# Define a named opener called "edit" that launches Neovim with
+# whatever file(s) were selected (supports multiple via "$@").
+# block = true tells Yazi to suspend itself and hand the terminal
+# over to Neovim until it exits, rather than running it detached.
+edit = [
+  { run = 'nvim "$@"', block = true },
+]
+pdf_native = [
+    { run = 'wslview "$1"', desc = "Open in Windows default viewer", orphan = true }
+]
+[open]
+# Rules are matched in order, mapping file types to openers.
+rules = [
+  # Any MIME type starting with "text/" (plain text, source code, etc.)
+  # opens in Neovim via the "edit" opener defined above.
+  { mime = "text/*", use = "edit" },
+
+  # Markdown files matched by filename rather than MIME type, since
+  # some systems don't reliably report .md files as "text/markdown".
+  { url = "*.md", use = "edit" },
+
+  # JSON files, matched explicitly because JSON sometimes gets its
+  # own MIME type rather than falling under the text/* wildcard.
+  { mime = "application/json", use = "edit" },
+  
+  # WSL - open PDF files in native viewer on Windows
+  { mime = "application/pdf", use = "pdf_native" },
+  
+  # Wildcard fallback rule 
+  { mime = "inode/empty", use = "edit" },
+]

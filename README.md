@@ -1,109 +1,69 @@
-# asapvw zsh shell .config
+# asapvw Linux CLI config
 
-## Dependencies
+Single home for the WSL2 Ubuntu command-line environment: zsh configuration,
+CLI tool configs (yazi, lazygit, btop, git ignore), and the package manifests
+that describe what's installed. Cross-platform configs (`.gitconfig`, nvim)
+live in the separate [dotfiles](https://github.com/asapvw/dotfiles) repo.
 
-### Setup Homebrew
+## Layout
 
-#### 1. Install prerequisites 
+```
+.zshenv .zshrc                 zsh core (loaded via ZDOTDIR)
+aliases.zsh bindings.zsh
+fzf.zsh plugins.zsh prompt.zsh  modular zsh files sourced from .zshrc
+starship.toml                  prompt config (STARSHIP_CONFIG)
+tools/                         CLI tool configs, symlinked into ~/.config
+  yazi/    yazi.toml, keymap.toml
+  lazygit/ config.yml
+  btop/    themes/ (btop writes btop.conf here once run)
+  git/     ignore (global excludes)
+packages/                      what's installed on this machine
+  Brewfile                     brew bundle manifest
+  apt-manual.txt               manually-installed apt packages
+bootstrap.zsh                  one-time new-machine setup
+```
+
+Symlinks from `~/.config/*` into `tools/` are created and self-healed by
+`_ensure_links` in `.zshrc` on every shell start — routed through the
+`~/.config/zsh` symlink so they survive a repo move.
+
+## New machine setup
 
 ```shell
+# 1. prerequisites + Homebrew
 sudo apt-get install build-essential procps curl file git
-```
-
-#### 2. Install Homebrew
-
-```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
 
-#### 3. Add Homebrew to shell runtime config
+# 2. get the repo (WSL setup symlinks the copy on the Windows mount)
+git clone git@github.com:asapvw/cli.git /mnt/c/Users/<you>/repos/cli
 
-Add Homebrew to your `PATH` to your shell rcfile (`~/.bashrc` for `bash` or `~/.zshrc` for `zsh`).
+# 3. run bootstrap — installs packages, wires ZDOTDIR, creates state dirs
+zsh /mnt/c/Users/<you>/repos/cli/bootstrap.zsh
 
-```shell
-test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
-test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> ~/.bashrc
-```
-
-### Setup `zsh` shell
-
-#### 1. Install `zsh`
-
-```shell
-brew install zsh
-```
-
-#### 2. Get the repo into `~/.config/zsh`
-
-Clone it there directly, or symlink an existing working copy (the WSL setup
-symlinks the copy that lives on the Windows mount):
-
-```shell
-git clone git@github.com:asapvw/zsh.git ~/.config/zsh
-# — or —
-ln -sn /mnt/c/Users/<you>/repos/zsh ~/.config/zsh
-```
-
-#### 3. Point zsh at the config via `ZDOTDIR`
-
-Create a `~/.zshenv` bootstrap stub (no root needed):
-
-```sh
-cat > ~/.zshenv <<'EOF'
-# Bootstrap stub — the real zsh config lives in $ZDOTDIR (~/.config/zsh).
-export ZDOTDIR="$HOME/.config/zsh"
-[[ -f "$ZDOTDIR/.zshenv" ]] && source "$ZDOTDIR/.zshenv"
-EOF
-```
-
-Alternatively (requires root, and then the stub is unnecessary), add to
-`/etc/zsh/zshenv`:
-
-```sh
-if [[ -z "$XDG_CONFIG_HOME" ]]; then
-    export XDG_CONFIG_HOME="$HOME/.config"
-fi
-if [[ -d "$XDG_CONFIG_HOME/zsh" ]]; then
-    export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
-fi
-```
-
-#### 4. Configure `zsh` as default shell
-
-Add `zsh` to `/etc/shells`:
-
-```shell
+# 4. make zsh the login shell
 command -v zsh | sudo tee -a /etc/shells
-```
-
-Set `zsh` as default shell:
-
-```shell
 chsh -s $(which zsh)
-```
-
-#### 5. Create required directories
-
-```shell
-mkdir -p ~/.local/state/zsh   # history
-mkdir -p ~/.cache/zsh         # completion cache
-```
-
-#### 6. Start a new shell
-
-```shell
 exec zsh
 ```
 
+`bootstrap.zsh` is idempotent — safe to re-run. It writes the `~/.zshenv`
+stub that sets `ZDOTDIR="$HOME/.config/zsh"` (a symlink to this repo; the
+symlink keeps the name `zsh` because that's what ZDOTDIR is). Plugins and
+tool-config symlinks are handled automatically on first shell launch.
 
-Plugins are installed automatically on first launch via the built-in plugin manager.
+Machine-specific values (e.g. `WIN_HOME`) go in `~/.zsh_local`, never
+committed.
 
-### Setup Shell Tools
+## Packages
 
-```shell
-brew install neovim eza bat fd fzf zoxide starship ripgrep
+`packages/Brewfile` and `packages/apt-manual.txt` are the source of truth
+for what's installed. After installing or removing tools, refresh them with:
+
+```sh
+pkgsync
 ```
+
+then review and commit the diff.
 
 ## Plugins
 
@@ -133,6 +93,9 @@ zplugin-update
 | `Ctrl+←` | Move backward one word |
 | `↑` / `↓` | History search by prefix |
 | `Ctrl+\` | Toggle autosuggestions |
+
+In yazi, `!` drops into an interactive zsh at yazi's current directory
+(`tools/yazi/keymap.toml`); `exit` returns to yazi.
 
 ## Starship Config
 

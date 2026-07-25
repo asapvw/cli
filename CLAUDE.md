@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Zsh configuration for a WSL2 Ubuntu machine, created by merging a personal config into the open-source [radleylewis/zsh](https://github.com/radleylewis/zsh) project. There is no build, lint, or test suite — validation is done by syntax-checking and launching a shell.
+The complete Linux CLI configuration for a WSL2 Ubuntu machine: zsh config (originally created by merging a personal config into the open-source [radleylewis/zsh](https://github.com/radleylewis/zsh) project), CLI tool configs under `tools/` (yazi, lazygit, btop, global git ignore), package manifests under `packages/`, and `bootstrap.zsh` for new-machine setup. The repo is named `cli`; cross-platform configs (`.gitconfig`, nvim) stay in the separate dotfiles repo. There is no build, lint, or test suite — validation is done by syntax-checking and launching a shell.
 
 ## Validation commands
 
@@ -23,9 +23,9 @@ This working copy IS the live config. `~/.config/zsh` is a symlink to this repo,
 Consequences:
 
 1. Edits here take effect in the next shell — no copy/sync step. Test with `zsh -i -c exit` before considering a change done.
-2. The dotfiles repo (`$WIN_HOME/repos/dotfiles/cli/linux/`) still contains stale `.zshrc`/`.zshenv` copies from the pre-ZDOTDIR era; its `bootstrap.zsh` no longer links them. Do not resurrect them.
-3. `_ensure_links` in `.zshrc` self-heals only the non-zsh symlinks (yazi, gitconfig, nvim) toward the dotfiles repo.
-4. Plugins clone to `~/.local/share/zsh/plugins/` (not `$ZDOTDIR/plugins/`) to keep them off the slow `/mnt/c` drvfs mount.
+2. `_ensure_links` in `.zshrc` self-heals the tool-config symlinks on every shell start: `tools/*` entries are addressed via `$ZDOTDIR` (so they survive a repo move); only `.gitconfig` and `nvim` still point at the dotfiles repo.
+3. Plugins clone to `~/.local/share/zsh/plugins/` (not `$ZDOTDIR/plugins/`) to keep them off the slow `/mnt/c` drvfs mount.
+4. `packages/Brewfile` and `packages/apt-manual.txt` are dumped manifests, not hand-curated — refresh with the `pkgsync` function after installing/removing tools; don't edit them manually.
 
 ## File roles and load order
 
@@ -34,6 +34,9 @@ Consequences:
 - `fzf.zsh`, `aliases.zsh`, `bindings.zsh`, `plugins.zsh`, `prompt.zsh` — modular files, each sourced from `.zshrc`. Aliases and shell functions go in `aliases.zsh`; fzf env vars and widgets in `fzf.zsh`.
 - `.src-zshenv`, `.src-zshrc`, `SRC-README.md` — pristine reference copies of the upstream project ([radleylewis/zsh](https://github.com/radleylewis/zsh)). Never edit these as live config; they exist for diffing against upstream.
 - `starship.toml` — prompt config, loaded via `STARSHIP_CONFIG="$ZDOTDIR/starship.toml"` in `.zshenv`.
+- `tools/` — CLI tool configs (yazi, lazygit, btop, git ignore), symlinked into `~/.config` by `_ensure_links`. Edit these files here, not the symlink targets' neighbors in `~/.config`.
+- `packages/` — dumped Brewfile + apt manifest (see `pkgsync`).
+- `bootstrap.zsh` — one-time new-machine setup: installs packages from the manifests, wires `~/.config/zsh` + the `~/.zshenv` ZDOTDIR stub. Idempotent; run manually, never sourced.
 
 ## Plugin system
 

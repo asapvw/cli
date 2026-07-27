@@ -67,7 +67,10 @@ fi
 #    The symlink keeps the name "zsh" (it IS zsh's ZDOTDIR) even though the
 #    repo is named cli.
 # -----------------------------------------------------------------------------
-if [[ "$(readlink ~/.config/zsh 2>/dev/null)" == "$CLI_REPO" ]]; then
+# -ef compares resolved directories, so a link that differs only in case
+# (drvfs is case-insensitive; the live link may deliberately use CLI) is
+# left alone instead of being churned on every re-run.
+if [[ -e ~/.config/zsh && ~/.config/zsh -ef "$CLI_REPO" ]]; then
   print "✓ already linked: ~/.config/zsh"
 else
   mkdir -p ~/.config
@@ -85,6 +88,15 @@ export ZDOTDIR="$HOME/.config/zsh"
 EOF
 print "→ wrote ~/.zshenv ZDOTDIR stub"
 mkdir -p ~/.local/state/zsh ~/.cache/zsh   # history + completion cache
+
+# Pre-ZDOTDIR installs symlinked ~/.zshrc from elsewhere — zsh ignores it
+# once ZDOTDIR is set, so drop the stale link to avoid confusion.
+if [[ -L ~/.zshrc ]]; then
+  rm ~/.zshrc
+  print "→ removed stale ~/.zshrc symlink (superseded by ZDOTDIR config)"
+elif [[ -f ~/.zshrc ]]; then
+  print "⚠ ~/.zshrc exists but is ignored now that ZDOTDIR is set — review and remove it manually"
+fi
 
 print ""
 print "Done. Start a fresh shell with:  exec zsh"

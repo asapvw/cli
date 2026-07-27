@@ -34,8 +34,11 @@ Symlinks from `~/.config/*` into `tools/` are created and self-healed by
 sudo apt-get install build-essential procps curl file git
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# 2. get the repo (WSL setup symlinks the copy on the Windows mount)
-git clone git@github.com:asapvw/cli.git /mnt/c/Users/<you>/repos/cli
+# 2. get the repos (WSL setup symlinks the copies on the Windows mount).
+#    dotfiles is needed too: _ensure_links silently skips the .gitconfig
+#    and nvim links when it's absent.
+git clone git@github.com:asapvw/cli.git      /mnt/c/Users/<you>/repos/cli
+git clone git@github.com:asapvw/dotfiles.git /mnt/c/Users/<you>/repos/dotfiles
 
 # 3. run bootstrap — installs packages, wires ZDOTDIR, creates state dirs
 zsh /mnt/c/Users/<you>/repos/cli/bootstrap.zsh
@@ -53,6 +56,37 @@ tool-config symlinks are handled automatically on first shell launch.
 
 Machine-specific values (e.g. `WIN_HOME`) go in `~/.zsh_local`, never
 committed.
+
+The SSH-agent block in `.zshrc` expects a key at `~/.ssh/asapvw` — put it
+in place (or adjust the path) or every new shell will report a failed
+`ssh-add`. If the key isn't on the machine yet, clone the repos over
+HTTPS first and switch the remotes later.
+
+## Migrating an existing WSL install
+
+A machine already running an older layout (home-dir `.zshrc`/`.zshenv`
+symlinks, or the previous `zsh` repo before the rename) transitions with
+the same script:
+
+```shell
+# 1. make sure the repos sit at their expected paths
+#    $WIN_HOME/repos/cli  and  $WIN_HOME/repos/dotfiles
+
+# 2. re-run bootstrap — it converges the machine:
+#    - re-points ~/.config/zsh at this repo (left alone if it already
+#      resolves here, even via a different-case drvfs path)
+#    - overwrites ~/.zshenv with the ZDOTDIR stub
+#    - removes a stale ~/.zshrc symlink (ignored once ZDOTDIR is set)
+zsh /mnt/c/Users/<you>/repos/cli/bootstrap.zsh
+
+# 3. reload
+exec zsh
+```
+
+Plugins re-clone themselves to `~/.local/share/zsh/plugins/` on first
+launch and `_ensure_links` refreshes the tool-config symlinks; old plugin
+clones from previous layouts (e.g. `plugins/` inside the old repo) can be
+deleted, nothing references them.
 
 ## Packages
 

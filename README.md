@@ -99,6 +99,12 @@ pkgsync
 
 then review and commit the diff.
 
+Both manifests are Linux-only: `pkgsync` dumps with `--no-winget`, because
+`brew bundle dump` on WSL would otherwise sweep the entire Windows winget
+inventory into the Brewfile. The Windows package manifest lives in the
+dotfiles repo (`windows/packages/winget.json`, refreshed with
+`winget export`).
+
 ## Plugins
 
 Managed without a third-party plugin manager. Plugins are cloned into `~/.local/share/zsh/plugins/` on first launch (kept off `$ZDOTDIR`, which may sit on a slow `/mnt/c` mount in WSL).

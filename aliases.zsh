@@ -127,7 +127,9 @@ als() { # print current aliases, optionally filtered: `als git`
 }
 
 pkgsync() { # refresh the package manifests committed in this repo
-    brew bundle dump --force --file="$ZDOTDIR/packages/Brewfile"
+    # --no-winget: on WSL, dump would otherwise include the Windows winget
+    # inventory — that belongs in the dotfiles repo (windows/packages/)
+    brew bundle dump --force --no-winget --file="$ZDOTDIR/packages/Brewfile"
     apt-mark showmanual > "$ZDOTDIR/packages/apt-manual.txt"
     print "Updated $ZDOTDIR/packages/ — review with: git -C $ZDOTDIR diff packages"
 }

@@ -25,6 +25,8 @@ export STARSHIP_CONFIG="$ZDOTDIR/starship.toml"
 # ---------- PATH ----------
 # Personal binaries/scripts
 export PATH="$HOME/.local/bin:$PATH"
+# ovftool
+export PATH="$HOME/tools/ovftool:$PATH"
 
 # -----------------------------------------------------------------------------
 # Windows host home (WSL2 mount of C:\Users\<user>)

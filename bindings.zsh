@@ -2,10 +2,14 @@
 # Keybindings
 # =========================================================
 
-# Cursor shape per vi mode
-ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BEAM
-ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
-ZVM_VISUAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+# Cursor shape per vi mode. zvm calls this during its init, after the
+# $ZVM_CURSOR_* constants exist — set at top level they'd expand empty.
+zvm_config() {
+  ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BEAM
+  ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+  ZVM_VISUAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+  ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+}
 
 # Disable command mode line highlight
 ZVM_VI_HIGHLIGHT_BACKGROUND=none

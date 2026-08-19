@@ -108,6 +108,14 @@ alias resclaude='claude --resume'
 alias cleanpaste='xclip -selection clipboard -o | sed "s/[▏▕│┃]//g" | sed "s/[[:space:]]*$//" | xclip -selection clipboard -i'
 
 # =========================================================
+# tmux
+# =========================================================
+
+t() { # attach-or-create a tmux session: `t` -> main, `t work` -> work
+    tmux new-session -A -s "${1:-main}"
+}
+
+# =========================================================
 # WSL2
 # =========================================================
 

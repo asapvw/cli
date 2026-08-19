@@ -1,13 +1,15 @@
 # Freely available high-quality data compressor
 brew "bzip2"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.14"
+# Official Amazon AWS command-line interface
+brew "awscli"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # GNU compiler collection
 brew "gcc"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.14"
 # Convert text between DOS, UNIX, and Mac formats
 brew "dos2unix"
 # Disk Usage/Free Utility - a better 'df' alternative
@@ -62,6 +64,8 @@ brew "ripgrep"
 brew "starship"
 # Modernized, complete, self-contained TeX/LaTeX engine
 brew "tectonic"
+# Terminal multiplexer
+brew "tmux"
 # Parser generator tool
 brew "tree-sitter-cli"
 # Internet file retriever
@@ -74,3 +78,4 @@ brew "yazi"
 brew "zoxide"
 # UNIX shell (command interpreter)
 brew "zsh"
+npm "defuddle"

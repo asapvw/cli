@@ -47,7 +47,7 @@ _ensure_links() {
   # links survive a repo move/rename. Cross-platform configs (gitconfig, nvim)
   # stay in the dotfiles repo.
   typeset -A links=(
-    "$ZDOTDIR/tools/tmux/tmux.toml"     "$HOME/.config/tmux/tmux.toml"
+    "$ZDOTDIR/tools/tmux/tmux.conf"     "$HOME/.config/tmux/tmux.conf"
     "$ZDOTDIR/tools/yazi/yazi.toml"     "$HOME/.config/yazi/yazi.toml"
     "$ZDOTDIR/tools/yazi/keymap.toml"   "$HOME/.config/yazi/keymap.toml"
     "$ZDOTDIR/tools/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"

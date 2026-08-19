@@ -14,6 +14,11 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 export ZDOTDIR="$HOME/.config/zsh"
 
+# ---------- tmux ----------
+export TMUX_CONF="$XDG_CONFIG_HOME/tmux/tmux.conf"
+export TMUX_CONF_LOCAL="$TMUX_CONF.local"
+export TMUX_CONF_DIR=$(dirname "$TMUX_CONF")
+
 # ---------- Editor ----------
 # Default editor used by git, crontab, etc.
 export EDITOR="nvim"

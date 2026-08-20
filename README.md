@@ -1,8 +1,8 @@
 # asapvw Linux CLI config
 
 Single home for the WSL2 Ubuntu command-line environment: zsh configuration,
-CLI tool configs (yazi, lazygit, btop, git ignore), and the package manifests
-that describe what's installed. Cross-platform configs (`.gitconfig`, nvim)
+CLI tool configs (tmux, yazi, lazygit, btop, git ignore), and the package
+manifests that describe what's installed. Cross-platform configs (`.gitconfig`, nvim)
 live in the separate [dotfiles](https://github.com/asapvw/dotfiles) repo.
 
 ## Layout
@@ -13,6 +13,7 @@ aliases.zsh bindings.zsh
 fzf.zsh plugins.zsh prompt.zsh  modular zsh files sourced from .zshrc
 starship.toml                  prompt config (STARSHIP_CONFIG)
 tools/                         CLI tool configs, symlinked into ~/.config
+  tmux/    tmux.conf
   yazi/    yazi.toml, keymap.toml
   lazygit/ config.yml
   btop/    themes/ (btop writes btop.conf here once run)
@@ -107,6 +108,8 @@ dotfiles repo (`windows/packages/winget.json`, refreshed with
 
 ## Plugins
 
+### zsh
+
 Managed without a third-party plugin manager. Plugins are cloned into `~/.local/share/zsh/plugins/` on first launch (kept off `$ZDOTDIR`, which may sit on a slow `/mnt/c` mount in WSL).
 
 | Plugin | Purpose |
@@ -122,6 +125,19 @@ To update all plugins:
 zplugin-update
 ```
 
+### tmux
+
+Managed by [TPM](https://github.com/tmux-plugins/tpm), which
+`tools/tmux/tmux.conf` self-clones into `~/.local/share/tmux/plugins/` on
+first tmux launch (off drvfs, like the zsh plugins) — no manual install
+step. `prefix+I` installs newly added plugins, `prefix+U` updates them.
+
+| Plugin | Purpose |
+|--------|---------|
+| [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) | Save/restore sessions across restarts |
+| [tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) | Automatic periodic saves + restore on server start |
+| [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) | Seamless `Ctrl+h/j/k/l` between nvim splits and tmux panes (nvim counterpart lives in the dotfiles repo) |
+
 ## Keybindings
 
 | Key | Action |
@@ -136,6 +152,28 @@ zplugin-update
 
 In yazi, `!` drops into an interactive zsh at yazi's current directory
 (`tools/yazi/keymap.toml`); `exit` returns to yazi.
+
+## tmux
+
+Config lives at `tools/tmux/tmux.conf` (symlinked to
+`~/.config/tmux/tmux.conf`). The prefix is `Ctrl+a`. The `t` function in
+`aliases.zsh` attaches to or creates a session: `t` → `main`, `t work` →
+`work`. Sessions survive restarts — tmux-resurrect + tmux-continuum save
+state periodically and restore it when the tmux server starts.
+
+| Key (after prefix) | Action |
+|-----|--------|
+| `\|` / `-` | Split pane horizontally / vertically (keeps current path) |
+| `h` `j` `k` `l` | Navigate panes (vim-style; `Ctrl+h/j/k/l` also works, no prefix) |
+| `H` `J` `K` `L` | Resize panes |
+| `Tab` / `Shift+Tab` | Last window / last session |
+| `f` | Fuzzy session switcher (fzf popup) |
+| `S` | New named session |
+| `X` | Kill session (with confirmation) |
+| `r` | Reload tmux config |
+
+Copy mode uses vi keys (`v` to select, `y` to yank); selections land on the
+system clipboard via xclip, with OSC-52 as the over-SSH fallback.
 
 ## Starship Config
 

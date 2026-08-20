@@ -1,6 +1,8 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 add_newline = false
+# drvfs (/mnt/c) stats are 9P round trips; the 30ms default aborts scans and drops language modules
+scan_timeout = 200
 
 format = "$directory$os$git_branch$git_status$nodejs$rust$golang$php $character"
 

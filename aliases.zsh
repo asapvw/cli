@@ -134,6 +134,22 @@ als() { # print current aliases, optionally filtered: `als git`
     fi
 }
 
+defs() { # fzf-search aliases & functions defined in this config; Enter prints the live definition
+    local -a src=("$ZDOTDIR"/.zshrc "$ZDOTDIR"/{aliases,bindings,fzf,plugins,prompt}.zsh)
+    local sel
+    # command grep: plain grep is aliased to rg above, and zsh expands aliases
+    # inside function bodies at definition time
+    sel=$(command grep -nHE '^(alias (-g |-- )?[^= ]+=|(function )?[A-Za-z0-9_.-]+\(\))' $src \
+        | sed -E \
+            -e 's|^([^:]+):([0-9]+):alias (-g \|-- )?([^=]+)=.*|\4\talias\t\1\t\2|' \
+            -e 's|^([^:]+):([0-9]+):(function )?([A-Za-z0-9_.-]+)\(\).*|\4\tfunction\t\1\t\2|' \
+        | sort -t$'\t' -k1,1 \
+        | fzf --delimiter='\t' --with-nth=1,2 --nth=1 --prompt='defs> ' \
+              --preview 'bat --color=always -l zsh --style=numbers --highlight-line {4} {3}' \
+              --preview-window 'right:65%:wrap:border-left:+{4}-5') || return
+    type -f -- "${sel%%$'\t'*}"
+}
+
 pkgsync() { # refresh the package manifests committed in this repo
     # --no-winget: on WSL, dump would otherwise include the Windows winget
     # inventory — that belongs in the dotfiles repo (windows/packages/)

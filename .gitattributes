@@ -1,0 +1,27 @@
+# .gitattributes — normalize line endings
+.gitattributes text eol=lf
+
+# Default: normalize all text files to LF
+* text=auto eol=lf
+
+# Explicit text files (LF)
+*.sh    text eol=lf
+*.zsh   text eol=lf
+*.py    text eol=lf
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.md    text eol=lf
+*.json  text eol=lf
+*.yaml  text eol=lf
+*.toml  text eol=lf
+
+# Windows-specific scripts (CRLF)
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binaries — no conversion, no diff
+*.png   binary
+*.jpg   binary
+*.pdf   binary
+*.zip   binary

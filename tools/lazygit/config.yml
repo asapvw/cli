@@ -1,0 +1,6 @@
+# Open files/links via xdg-open (-> wslview from wslu), not lazygit's WSL
+# default of `powershell.exe start`: wslview calls Windows binaries by absolute
+# path, so it works even when the Windows dirs are missing from PATH.
+os:
+  open: xdg-open {{filename}} >/dev/null
+  openLink: xdg-open {{link}} >/dev/null

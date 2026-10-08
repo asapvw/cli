@@ -152,7 +152,7 @@ step. `prefix+I` installs newly added plugins, `prefix+U` updates them.
 |--------|---------|
 | [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect) | Save/restore sessions across restarts |
 | [tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) | Automatic periodic saves + restore on server start |
-| [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) | Seamless `Ctrl+h/j/k/l` between nvim splits and tmux panes (nvim counterpart lives in the dotfiles repo) |
+| [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) | Seamless `Ctrl+h/j/k/l` between nvim splits and tmux panes (nvim counterpart lives in the dotfiles repo). Claude Code panes keep these keys (`Ctrl+Enter` arrives as `Ctrl+j` = newline) — leave them with `prefix+h/j/k/l` |
 
 ## Keybindings
 

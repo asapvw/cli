@@ -83,3 +83,4 @@ Keep this file under 500 lines. It is loaded into every session, and long contex
 
 - yazi (≥ 26.x from Homebrew) openers take `%s` / `%s1`-style placeholders, not `$@` / `$1` — the old `$`-style silently expands to empty and the opener exits with a confusing error (e.g. tdf's "Cannot canonicalize provided file"). 
 - The tmux server can inherit a PATH with no Windows dirs (first shell after WSL boot), so every pane loses `powershell.exe`/`explorer.exe`; open URLs/files via `xdg-open` → `wslview` (absolute paths), never a bare `*.exe` — lazygit's WSL default `powershell.exe start` broke this way.
+- vim-tmux-navigator steals `C-h/j/k/l` in every pane whose process isn't in `@vim_navigator_pattern`; Windows Terminal sends Ctrl+Enter as `C-j`, so any TUI that needs those keys (Claude Code's newline) must be added to that pattern in `tools/tmux/tmux.conf`.

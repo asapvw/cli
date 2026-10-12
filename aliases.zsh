@@ -93,6 +93,13 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate -20'
 alias lzg='lazygit'
 
+gnb() { # prompt for a branch name, then create it from HEAD and switch to it
+    local name
+    read -r "name?branch> " || return
+    [[ -n "$name" ]] || { print -u2 "gnb: no branch name given"; return 1; }
+    git switch -c "$name"
+}
+
 # =========================================================
 # Package updates
 # =========================================================
